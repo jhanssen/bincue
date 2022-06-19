@@ -28,8 +28,6 @@ std::pair<CueParser::Track::Type, bool> trackType(const char* type)
 {
     if (!strncmp(type, "AUDIO", 6))
         return std::make_pair(CueParser::Track::Type::Audio, true);
-    else if (!strncmp(type, "CDG", 3))
-        return std::make_pair(CueParser::Track::Type::CDG, true);
     else if (!strncmp(type, "MODE1/2048", 10))
         return std::make_pair(CueParser::Track::Type::Mode1_2048, true);
     else if (!strncmp(type, "MODE1/2352", 10))
@@ -42,6 +40,8 @@ std::pair<CueParser::Track::Type, bool> trackType(const char* type)
         return std::make_pair(CueParser::Track::Type::Mode2_2336, true);
     else if (!strncmp(type, "MODE2/2352", 10))
         return std::make_pair(CueParser::Track::Type::Mode2_2352, true);
+    else if (!strncmp(type, "CDG", 3))
+        return std::make_pair(CueParser::Track::Type::CDG, true);
     else if (!strncmp(type, "CDI/2336", 8))
         return std::make_pair(CueParser::Track::Type::CDI_2336, true);
     else if (!strncmp(type, "CDI/2352", 8))
