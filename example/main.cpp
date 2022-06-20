@@ -25,6 +25,22 @@ int main(int argc, char** argv)
             if (track.postgap) {
                 printf(" postgap %u:%u:%u\n", track.postgap->mm, track.postgap->ss, track.postgap->ff);
             }
+            if (track.flags != 0) {
+                printf(" flag");
+                if (track.flags & CueParser::Track::Flag::DCP) {
+                    printf(" dcp");
+                }
+                if (track.flags & CueParser::Track::Flag::CH4) {
+                    printf(" 4ch");
+                }
+                if (track.flags & CueParser::Track::Flag::PRE) {
+                    printf(" pre");
+                }
+                if (track.flags & CueParser::Track::Flag::SCMS) {
+                    printf(" scms");
+                }
+                printf("\n");
+            }
         }
     }
 

@@ -36,8 +36,16 @@ struct Track
         CDI_2352
     };
 
+    enum class Flag {
+        DCP  = 0x1,
+        CH4  = 0x2, // C++ doesn't allow 4CH since identifiers can't start with a number
+        PRE  = 0x4,
+        SCMS = 0x8
+    };
+
     uint32_t trackNo { 0 };
     Type type { };
+    Flag flags { };
 
     std::optional<Length> pregap { };
     std::vector<Index> index { };
@@ -68,5 +76,49 @@ struct CueSheet
 
 CueSheet parseFile(const std::filesystem::path& filename);
 CueSheet parse(const std::string& data);
+
+template<typename T>
+class BoolConvertible
+{
+public:
+    BoolConvertible(T t)
+        : mT(t)
+    {
+    }
+
+    explicit operator bool() const { return static_cast<bool>(mT); }
+    operator T() const { return mT; }
+
+private:
+    T mT;
+};
+
+inline BoolConvertible<Track::Flag> operator&(Track::Flag f1, Track::Flag f2)
+{
+    return BoolConvertible<Track::Flag>(
+        static_cast<Track::Flag>(
+            static_cast<std::underlying_type_t<Track::Flag>>(f1)
+            & static_cast<std::underlying_type_t<Track::Flag>>(f2))
+        );
+}
+
+inline BoolConvertible<Track::Flag> operator|(Track::Flag f1, Track::Flag f2)
+{
+    return BoolConvertible<Track::Flag>(
+        static_cast<Track::Flag>(
+            static_cast<std::underlying_type_t<Track::Flag>>(f1)
+            | static_cast<std::underlying_type_t<Track::Flag>>(f2))
+        );
+}
+
+inline bool operator==(Track::Flag f1, std::underlying_type_t<Track::Flag> f2)
+{
+    return static_cast<std::underlying_type_t<Track::Flag>>(f1) == f2;
+}
+
+inline bool operator!=(Track::Flag f1, std::underlying_type_t<Track::Flag> f2)
+{
+    return static_cast<std::underlying_type_t<Track::Flag>>(f1) != f2;
+}
 
 } // namespace CueParser

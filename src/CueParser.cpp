@@ -8,7 +8,15 @@ namespace fs = std::filesystem;
 
 namespace {
 
-enum { MaxTokens = 3 };
+enum { MaxTokens = 5 };
+
+inline void operator|=(CueParser::Track::Flag& f1, CueParser::Track::Flag f2)
+{
+    f1 = (static_cast<CueParser::Track::Flag>(
+              static_cast<std::underlying_type_t<CueParser::Track::Flag>>(f1)
+              | static_cast<std::underlying_type_t<CueParser::Track::Flag>>(f2))
+        );
+}
 
 std::pair<CueParser::File::Type, bool> fileType(const char* type)
 {
@@ -280,6 +288,28 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().postgap = length;
+        } else if (!strncmp(token, "FLAGS", 5)) {
+            if (out.files.empty())
+                continue;
+            auto& file = out.files.back();
+            if (file.tracks.empty())
+                continue;
+            // we should have one or more tokens, FLAGS [flag1 [flag2 ...]]
+            Track::Flag flags = {};
+            for (uint32_t idx = 1;; ++idx) {
+                const auto f = state.token(idx);
+                if (f == nullptr)
+                    break;
+                if (!strncmp(f, "DCP", 3))
+                    flags |= Track::Flag::DCP;
+                else if (!strncmp(f, "4CH", 3))
+                    flags |= Track::Flag::CH4;
+                else if (!strncmp(f, "PRE", 3))
+                    flags |= Track::Flag::PRE;
+                else if (!strncmp(f, "SCMS", 4))
+                    flags |= Track::Flag::SCMS;
+            }
+            file.tracks.back().flags = flags;
         } else if (!strncmp(token, "CATALOG", 7)) {
             // we should have two tokens, CATALOG <number>
             const auto [ number, numberok ] = state.number<uint64_t>(1);
