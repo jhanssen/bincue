@@ -63,6 +63,7 @@ struct File
 struct CueSheet
 {
     std::vector<File> files;
+    std::optional<uint64_t> catalog { };
 };
 
 CueSheet parseFile(const std::filesystem::path& filename);

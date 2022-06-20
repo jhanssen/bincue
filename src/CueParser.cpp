@@ -61,7 +61,10 @@ struct State
     const char* token(size_t n);
 
     template<typename Int>
-    std::pair<Int, bool> number(size_t n);
+    std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n);
+
+    template<typename Int>
+    std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n);
 
     std::pair<CueParser::Length, bool> mmssff(size_t n);
 
@@ -81,13 +84,26 @@ const char* State::token(size_t n)
 }
 
 template<typename Int>
-std::pair<Int, bool> State::number(size_t n)
+std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n)
 {
     const char* t = token(n);
     if (t == nullptr)
         return std::make_pair(Int {}, false);
     char* endptr;
     const auto nn = strtoll(t, &endptr, 10);
+    if (*endptr != '\0')
+        return std::make_pair(Int {}, false);
+    return std::make_pair(static_cast<Int>(nn), true);
+}
+
+template<typename Int>
+std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n)
+{
+    const char* t = token(n);
+    if (t == nullptr)
+        return std::make_pair(Int {}, false);
+    char* endptr;
+    const auto nn = strtoull(t, &endptr, 10);
     if (*endptr != '\0')
         return std::make_pair(Int {}, false);
     return std::make_pair(static_cast<Int>(nn), true);
@@ -264,6 +280,12 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().postgap = length;
+        } else if (!strncmp(token, "CATALOG", 7)) {
+            // we should have two tokens, CATALOG <number>
+            const auto [ number, numberok ] = state.number<uint64_t>(1);
+            if (numberok) {
+                out.catalog = number;
+            }
         }
     }
 
