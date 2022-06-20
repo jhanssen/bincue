@@ -90,7 +90,7 @@ public:
     operator T() const { return mT; }
 
 private:
-    T mT;
+    const T mT;
 };
 
 inline BoolConvertible<Track::Flag> operator&(Track::Flag f1, Track::Flag f2)
