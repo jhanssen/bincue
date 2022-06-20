@@ -9,6 +9,9 @@ int main(int argc, char** argv)
     }
 
     const auto sheet = CueParser::parseFile(argv[1]);
+    if (sheet.catalog) {
+        printf("catalog %llu\n", static_cast<unsigned long long>(*sheet.catalog));
+    }
     for (const auto& file : sheet.files) {
         printf("file '%s' type 0x%x\n", file.filename.c_str(), static_cast<uint32_t>(file.type));
         for (const auto& track : file.tracks) {
