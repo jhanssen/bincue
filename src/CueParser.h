@@ -43,7 +43,7 @@ struct Track
         SCMS = 0x8
     };
 
-    uint32_t trackNo { 0 };
+    uint32_t number { 0 };
     Type type { };
     Flag flags { };
 

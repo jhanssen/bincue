@@ -15,7 +15,7 @@ int main(int argc, char** argv)
     for (const auto& file : sheet.files) {
         printf("file '%s' type 0x%x\n", file.filename.c_str(), static_cast<uint32_t>(file.type));
         for (const auto& track : file.tracks) {
-            printf("- track %u type 0x%x\n", track.trackNo, static_cast<uint32_t>(track.type));
+            printf("- track %u type 0x%x\n", track.number, static_cast<uint32_t>(track.type));
             if (track.pregap) {
                 printf(" pregap %u:%u:%u\n", track.pregap->mm, track.pregap->ss, track.pregap->ff);
             }
