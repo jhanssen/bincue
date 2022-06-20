@@ -70,7 +70,8 @@ struct File
 
 struct CueSheet
 {
-    std::vector<File> files;
+    std::vector<File> files { };
+    std::string cdtextfile { };
     std::optional<uint64_t> catalog { };
 };
 

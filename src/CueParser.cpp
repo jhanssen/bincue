@@ -316,6 +316,12 @@ CueSheet parse(const std::string& data)
             if (numberok) {
                 out.catalog = number;
             }
+        } else if (!strncmp(token, "CDTEXTFILE", 10)) {
+            // we should have two tokens, CDTEXTFILE filename
+            const auto fn = state.token(1);
+            if (fn) {
+                out.cdtextfile = fn;
+            }
         }
     }
 
