@@ -27,7 +27,7 @@ std::pair<CueParser::File::Type, bool> fileType(const char* type)
 
 std::pair<CueParser::Track::Type, bool> trackType(const char* type)
 {
-    if (!strncmp(type, "AUDIO", 6))
+    if (!strncmp(type, "AUDIO", 5))
         return std::make_pair(CueParser::Track::Type::Audio, true);
     else if (!strncmp(type, "MODE1/2048", 10))
         return std::make_pair(CueParser::Track::Type::Mode1_2048, true);
