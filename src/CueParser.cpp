@@ -1,4 +1,5 @@
 #include "CueParser.h"
+#include <array>
 #include <cstring>
 #include <cstdlib>
 #include <fstream>
