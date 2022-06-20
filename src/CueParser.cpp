@@ -288,6 +288,17 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().postgap = length;
+        } else if (!strncmp(token, "TITLE", 5)) {
+            if (out.files.empty())
+                continue;
+            auto& file = out.files.back();
+            if (file.tracks.empty())
+                continue;
+            // we should have two tokens, TITLE title
+            const auto title = state.token(1);
+            if (!title)
+                continue;
+            file.tracks.back().title = title;
         } else if (!strncmp(token, "FLAGS", 5)) {
             if (out.files.empty())
                 continue;

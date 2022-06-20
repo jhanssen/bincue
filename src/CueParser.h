@@ -50,6 +50,7 @@ struct Track
     std::optional<Length> pregap { };
     std::vector<Index> index { };
     std::optional<Length> postgap { };
+    std::string title { };
 };
 
 struct File
