@@ -21,6 +21,14 @@ struct Index
     Length length { };
 };
 
+struct ISRC
+{
+    char country[2];
+    char owner[3];
+    char year[2];
+    uint32_t serial;
+};
+
 struct Track
 {
     enum class Type {
@@ -53,6 +61,7 @@ struct Track
     std::string title { };
     std::string performer { };
     std::string songwriter { };
+    std::optional<ISRC> isrc { };
 };
 
 struct File

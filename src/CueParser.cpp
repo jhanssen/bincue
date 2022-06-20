@@ -321,6 +321,37 @@ CueSheet parse(const std::string& data)
             if (!songwriter)
                 continue;
             file.tracks.back().songwriter = songwriter;
+        } else if (!strncmp(token, "ISRC", 4)) {
+            if (out.files.empty())
+                continue;
+            auto& file = out.files.back();
+            if (file.tracks.empty())
+                continue;
+            // we should have two tokens, ISRC CCOOOYYSSSSS
+            const auto isrct = state.token(1);
+            if (!isrct)
+                continue;
+            const auto len = strlen(isrct);
+            if (len != 12)
+                continue;
+
+            // convert the serial
+            char* endl;
+            const auto serial = strtoul(isrct + 7, &endl, 10);
+            if (*endl != '\0')
+                continue;
+
+            ISRC isrc;
+            isrc.country[0] = isrct[0];
+            isrc.country[1] = isrct[1];
+            isrc.owner[0] = isrct[2];
+            isrc.owner[1] = isrct[3];
+            isrc.owner[2] = isrct[4];
+            isrc.year[0] = isrct[5];
+            isrc.year[1] = isrct[6];
+            isrc.serial = static_cast<uint32_t>(serial);
+
+            file.tracks.back().isrc = isrc;
         } else if (!strncmp(token, "FLAGS", 5)) {
             if (out.files.empty())
                 continue;
