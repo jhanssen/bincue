@@ -51,6 +51,8 @@ struct Track
     std::vector<Index> index { };
     std::optional<Length> postgap { };
     std::string title { };
+    std::string performer { };
+    std::string songwriter { };
 };
 
 struct File

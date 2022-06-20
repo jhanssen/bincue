@@ -299,6 +299,28 @@ CueSheet parse(const std::string& data)
             if (!title)
                 continue;
             file.tracks.back().title = title;
+        } else if (!strncmp(token, "PERFORMER", 9)) {
+            if (out.files.empty())
+                continue;
+            auto& file = out.files.back();
+            if (file.tracks.empty())
+                continue;
+            // we should have two tokens, PERFORMER performer
+            const auto performer = state.token(1);
+            if (!performer)
+                continue;
+            file.tracks.back().performer = performer;
+        } else if (!strncmp(token, "SONGWRITER", 10)) {
+            if (out.files.empty())
+                continue;
+            auto& file = out.files.back();
+            if (file.tracks.empty())
+                continue;
+            // we should have two tokens, SONGWRITER songwriter
+            const auto songwriter = state.token(1);
+            if (!songwriter)
+                continue;
+            file.tracks.back().songwriter = songwriter;
         } else if (!strncmp(token, "FLAGS", 5)) {
             if (out.files.empty())
                 continue;
