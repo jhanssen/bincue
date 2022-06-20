@@ -132,12 +132,18 @@ bool State::nextLine()
     auto data = mData.data();
     auto pos = strchr(data + mOffset, '\n');
     if (pos == nullptr) {
-        mOffset = size;
-        return false;
+        // use the rest of the data as the remainer
+        pos = data + size;
     }
 
     auto start = mOffset;
     mOffset = (pos - data) + 1;
+
+    if (mOffset - start == 1) {
+        // skip empty lines
+        mNumTokens = 0;
+        return true;
+    }
 
     // split on whitespace
     auto skipWS = [data, this](size_t from) {
