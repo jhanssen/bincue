@@ -289,37 +289,49 @@ CueSheet parse(const std::string& data)
                 continue;
             file.tracks.back().postgap = length;
         } else if (!strncmp(token, "TITLE", 5)) {
-            if (out.files.empty())
-                continue;
-            auto& file = out.files.back();
-            if (file.tracks.empty())
-                continue;
             // we should have two tokens, TITLE title
             const auto title = state.token(1);
             if (!title)
                 continue;
+            if (out.files.empty()) {
+                out.title = title;
+                continue;
+            }
+            auto& file = out.files.back();
+            if (file.tracks.empty()) {
+                out.title = title;
+                continue;
+            }
             file.tracks.back().title = title;
         } else if (!strncmp(token, "PERFORMER", 9)) {
-            if (out.files.empty())
-                continue;
-            auto& file = out.files.back();
-            if (file.tracks.empty())
-                continue;
             // we should have two tokens, PERFORMER performer
             const auto performer = state.token(1);
             if (!performer)
                 continue;
+            if (out.files.empty()) {
+                out.performer = performer;
+                continue;
+            }
+            auto& file = out.files.back();
+            if (file.tracks.empty()) {
+                out.performer = performer;
+                continue;
+            }
             file.tracks.back().performer = performer;
         } else if (!strncmp(token, "SONGWRITER", 10)) {
-            if (out.files.empty())
-                continue;
-            auto& file = out.files.back();
-            if (file.tracks.empty())
-                continue;
             // we should have two tokens, SONGWRITER songwriter
             const auto songwriter = state.token(1);
             if (!songwriter)
                 continue;
+            if (out.files.empty()) {
+                out.songwriter = songwriter;
+                continue;
+            }
+            auto& file = out.files.back();
+            if (file.tracks.empty()) {
+                out.songwriter = songwriter;
+                continue;
+            }
             file.tracks.back().songwriter = songwriter;
         } else if (!strncmp(token, "ISRC", 4)) {
             if (out.files.empty())
