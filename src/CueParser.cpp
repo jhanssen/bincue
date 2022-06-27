@@ -10,7 +10,12 @@ namespace {
 
 enum { MaxTokens = 5 };
 
-inline void operator|=(CueParser::Track::Flag& f1, CueParser::Track::Flag f2)
+static bool inline isSpace(char c)
+{
+    return isspace(c) != 0 || c == '\0';
+}
+
+static inline void operator|=(CueParser::Track::Flag& f1, CueParser::Track::Flag f2)
 {
     f1 = (static_cast<CueParser::Track::Flag>(
               static_cast<std::underlying_type_t<CueParser::Track::Flag>>(f1)
@@ -18,7 +23,7 @@ inline void operator|=(CueParser::Track::Flag& f1, CueParser::Track::Flag f2)
         );
 }
 
-std::pair<CueParser::File::Type, bool> fileType(const char* type)
+static inline std::pair<CueParser::File::Type, bool> fileType(const char* type)
 {
     if (!strncmp(type, "BINARY", 6))
         return std::make_pair(CueParser::File::Type::Binary, true);
@@ -33,7 +38,7 @@ std::pair<CueParser::File::Type, bool> fileType(const char* type)
     return std::make_pair(CueParser::File::Type::Binary, false);
 }
 
-std::pair<CueParser::Track::Type, bool> trackType(const char* type)
+static inline std::pair<CueParser::Track::Type, bool> trackType(const char* type)
 {
     if (!strncmp(type, "AUDIO", 5))
         return std::make_pair(CueParser::Track::Type::Audio, true);
@@ -84,7 +89,7 @@ struct State
     std::array<size_t, MaxTokens> mTokens { };
 };
 
-const char* State::token(size_t n)
+inline const char* State::token(size_t n)
 {
     if (n >= mNumTokens)
         return nullptr;
@@ -172,7 +177,7 @@ bool State::nextLine()
 
     // split on whitespace
     auto skipWS = [data, this](size_t from) {
-        while (from < mOffset && isspace(*(data + from)))
+        while (from < mOffset && isSpace(*(data + from)))
             ++from;
         return from;
     };
@@ -189,7 +194,7 @@ bool State::nextLine()
             quote = true;
         } else {
             // skip until next ws
-            while (from < mOffset && !isspace(*(data + from)))
+            while (from < mOffset && !isSpace(*(data + from)))
                 ++from;
         }
         return std::make_pair(from, quote);
