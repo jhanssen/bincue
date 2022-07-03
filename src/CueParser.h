@@ -29,6 +29,12 @@ struct ISRC
     uint32_t serial;
 };
 
+struct Comment
+{
+    std::string tag;
+    std::string value;
+};
+
 struct Track
 {
     enum class Type {
@@ -88,6 +94,7 @@ struct CueSheet
     std::string title { };
     std::string performer { };
     std::string songwriter { };
+    std::vector<Comment> comments { };
 };
 
 CueSheet parseFile(const std::filesystem::path& filename);

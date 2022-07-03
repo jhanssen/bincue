@@ -297,6 +297,11 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().postgap = length;
+        } else if (!strncmp(token, "REM", 3)) {
+            // we should have three tokens, REM <tag> <value>
+            if (state.numTokens() == 3) {
+                out.comments.push_back(Comment { state.token(1), state.token(2) });
+            }
         } else if (!strncmp(token, "TITLE", 5)) {
             // we should have two tokens, TITLE title
             const auto title = state.token(1);

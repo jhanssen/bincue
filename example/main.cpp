@@ -43,6 +43,9 @@ int main(int argc, char** argv)
             }
         }
     }
+    for (const auto& comment : sheet.comments) {
+        printf("rem '%s' '%s'\n", comment.tag.c_str(), comment.value.c_str());
+    }
 
     return 0;
 }
