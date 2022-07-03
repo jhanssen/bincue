@@ -9,11 +9,11 @@ int main(int argc, char** argv)
     }
 
     const auto sheet = CueParser::parseFile(argv[1]);
-    if (!sheet.cdtextfile.empty()) {
-        printf("cdtextfile '%s'\n", sheet.cdtextfile.c_str());
-    }
     if (sheet.catalog) {
         printf("catalog %llu\n", static_cast<unsigned long long>(*sheet.catalog));
+    }
+    if (!sheet.cdtextfile.empty()) {
+        printf("cdtextfile '%s'\n", sheet.cdtextfile.c_str());
     }
     if (!sheet.title.empty()) {
         printf("title '%s'\n", sheet.title.c_str());
@@ -28,6 +28,15 @@ int main(int argc, char** argv)
         printf("file '%s' type 0x%x\n", file.filename.c_str(), static_cast<uint32_t>(file.type));
         for (const auto& track : file.tracks) {
             printf("- track %u type 0x%x\n", track.number, static_cast<uint32_t>(track.type));
+            if (!track.title.empty()) {
+                printf(" title '%s'\n", track.title.c_str());
+            }
+            if (!track.performer.empty()) {
+                printf(" performer '%s'\n", track.performer.c_str());
+            }
+            if (!track.songwriter.empty()) {
+                printf(" songwriter '%s'\n", track.songwriter.c_str());
+            }
             if (track.pregap) {
                 printf(" pregap %u:%u:%u\n", track.pregap->mm, track.pregap->ss, track.pregap->ff);
             }
@@ -52,6 +61,14 @@ int main(int argc, char** argv)
                     printf(" scms");
                 }
                 printf("\n");
+            }
+            if (track.isrc) {
+                const auto& isrc = *track.isrc;
+                printf(" isrc %c%c%c%c%c%c%c%07u\n",
+                       isrc.country[0], isrc.country[1],
+                       isrc.owner[0], isrc.owner[1], isrc.owner[2],
+                       isrc.year[0], isrc.year[1],
+                       isrc.serial);
             }
         }
     }
