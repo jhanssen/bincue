@@ -301,7 +301,7 @@ CueSheet parse(const std::string& data)
         } else if (!strncasecmp(token, "REM", 3)) {
             // we should have three tokens, REM <tag> <value>
             if (state.numTokens() == 3) {
-                out.comments.push_back(Comment { state.token(1), state.token(2) });
+                out.comments.push_back(CueParser::Comment { state.token(1), state.token(2) });
             }
         } else if (!strncasecmp(token, "TITLE", 5)) {
             // we should have two tokens, TITLE title
