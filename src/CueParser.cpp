@@ -63,24 +63,28 @@ static inline std::pair<CueParser::Track::Type, bool> trackType(const char* type
     return std::make_pair(CueParser::Track::Type::Audio, false);
 }
 
-struct State
+class State
 {
+public:
     State(const std::string& data)
         : mData(data)
     {
     }
 
     bool nextLine();
-    const char* token(size_t n);
+
+    const char* token(size_t n) const;
+    size_t numTokens() const { return mNumTokens; }
 
     template<typename Int>
-    std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n);
+    std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n) const;
 
     template<typename Int>
-    std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n);
+    std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> number(size_t n) const;
 
-    std::pair<CueParser::Length, bool> mmssff(size_t n);
+    std::pair<CueParser::Length, bool> mmssff(size_t n) const;
 
+private:
     std::string mData;
 
     size_t mOffset { 0 };
@@ -89,7 +93,7 @@ struct State
     std::array<size_t, MaxTokens> mTokens { };
 };
 
-inline const char* State::token(size_t n)
+inline const char* State::token(size_t n) const
 {
     if (n >= mNumTokens)
         return nullptr;
@@ -97,7 +101,7 @@ inline const char* State::token(size_t n)
 }
 
 template<typename Int>
-std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n)
+std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n) const
 {
     const char* t = token(n);
     if (t == nullptr)
@@ -110,7 +114,7 @@ std::enable_if_t<!std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(s
 }
 
 template<typename Int>
-std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n)
+std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(size_t n) const
 {
     const char* t = token(n);
     if (t == nullptr)
@@ -122,7 +126,7 @@ std::enable_if_t<std::is_unsigned_v<Int>, std::pair<Int, bool>> State::number(si
     return std::make_pair(static_cast<Int>(nn), true);
 }
 
-std::pair<CueParser::Length, bool> State::mmssff(size_t n)
+std::pair<CueParser::Length, bool> State::mmssff(size_t n) const
 {
     const char* t = token(n);
     if (t == nullptr)
