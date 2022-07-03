@@ -1,8 +1,9 @@
 #include "CueParser.h"
 #include <array>
-#include <cstring>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
+#include <strings.h>
 
 namespace fs = std::filesystem;
 
@@ -25,40 +26,40 @@ static inline void operator|=(CueParser::Track::Flag& f1, CueParser::Track::Flag
 
 static inline std::pair<CueParser::File::Type, bool> fileType(const char* type)
 {
-    if (!strncmp(type, "BINARY", 6))
+    if (!strncasecmp(type, "BINARY", 6))
         return std::make_pair(CueParser::File::Type::Binary, true);
-    else if (!strncmp(type, "WAVE", 4))
+    else if (!strncasecmp(type, "WAVE", 4))
         return std::make_pair(CueParser::File::Type::Wave, true);
-    else if (!strncmp(type, "MP3", 3))
+    else if (!strncasecmp(type, "MP3", 3))
         return std::make_pair(CueParser::File::Type::Mp3, true);
-    else if (!strncmp(type, "AIFF", 4))
+    else if (!strncasecmp(type, "AIFF", 4))
         return std::make_pair(CueParser::File::Type::Aiff, true);
-    else if (!strncmp(type, "MOTOROLA", 8))
+    else if (!strncasecmp(type, "MOTOROLA", 8))
         return std::make_pair(CueParser::File::Type::Motorola, true);
     return std::make_pair(CueParser::File::Type::Binary, false);
 }
 
 static inline std::pair<CueParser::Track::Type, bool> trackType(const char* type)
 {
-    if (!strncmp(type, "AUDIO", 5))
+    if (!strncasecmp(type, "AUDIO", 5))
         return std::make_pair(CueParser::Track::Type::Audio, true);
-    else if (!strncmp(type, "MODE1/2048", 10))
+    else if (!strncasecmp(type, "MODE1/2048", 10))
         return std::make_pair(CueParser::Track::Type::Mode1_2048, true);
-    else if (!strncmp(type, "MODE1/2352", 10))
+    else if (!strncasecmp(type, "MODE1/2352", 10))
         return std::make_pair(CueParser::Track::Type::Mode1_2352, true);
-    else if (!strncmp(type, "MODE2/2048", 10))
+    else if (!strncasecmp(type, "MODE2/2048", 10))
         return std::make_pair(CueParser::Track::Type::Mode2_2048, true);
-    else if (!strncmp(type, "MODE2/2324", 10))
+    else if (!strncasecmp(type, "MODE2/2324", 10))
         return std::make_pair(CueParser::Track::Type::Mode2_2324, true);
-    else if (!strncmp(type, "MODE2/2336", 10))
+    else if (!strncasecmp(type, "MODE2/2336", 10))
         return std::make_pair(CueParser::Track::Type::Mode2_2336, true);
-    else if (!strncmp(type, "MODE2/2352", 10))
+    else if (!strncasecmp(type, "MODE2/2352", 10))
         return std::make_pair(CueParser::Track::Type::Mode2_2352, true);
-    else if (!strncmp(type, "CDG", 3))
+    else if (!strncasecmp(type, "CDG", 3))
         return std::make_pair(CueParser::Track::Type::CDG, true);
-    else if (!strncmp(type, "CDI/2336", 8))
+    else if (!strncasecmp(type, "CDI/2336", 8))
         return std::make_pair(CueParser::Track::Type::CDI_2336, true);
-    else if (!strncmp(type, "CDI/2352", 8))
+    else if (!strncasecmp(type, "CDI/2352", 8))
         return std::make_pair(CueParser::Track::Type::CDI_2352, true);
     return std::make_pair(CueParser::Track::Type::Audio, false);
 }
@@ -241,7 +242,7 @@ CueSheet parse(const std::string& data)
         const auto token = state.token(0);
         if (!token)
             continue;
-        if (!strncmp(token, "FILE", 4)) {
+        if (!strncasecmp(token, "FILE", 4)) {
             // we should have three tokens, FILE <filename> <type>
             const auto filename = state.token(1);
             const auto type = state.token(2);
@@ -251,7 +252,7 @@ CueSheet parse(const std::string& data)
             if (!typeok)
                 continue;
             out.files.push_back(CueParser::File { std::string(filename), typee });
-        } else if (!strncmp(token, "TRACK", 5)) {
+        } else if (!strncasecmp(token, "TRACK", 5)) {
             if (out.files.empty())
                 continue;
             // we should have three tokens, TRACK <number> <type>
@@ -263,7 +264,7 @@ CueSheet parse(const std::string& data)
             if (!typeok)
                 continue;
             out.files.back().tracks.push_back(CueParser::Track { number, typee });
-        } else if (!strncmp(token, "INDEX", 5)) {
+        } else if (!strncasecmp(token, "INDEX", 5)) {
             if (out.files.empty())
                 continue;
             auto& file = out.files.back();
@@ -275,7 +276,7 @@ CueSheet parse(const std::string& data)
             if (!numberok || !lengthok)
                 continue;
             file.tracks.back().index.push_back(CueParser::Index { number, length });
-        } else if (!strncmp(token, "PREGAP", 6)) {
+        } else if (!strncasecmp(token, "PREGAP", 6)) {
             if (out.files.empty())
                 continue;
             auto& file = out.files.back();
@@ -286,7 +287,7 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().pregap = length;
-        } else if (!strncmp(token, "POSTGAP", 7)) {
+        } else if (!strncasecmp(token, "POSTGAP", 7)) {
             if (out.files.empty())
                 continue;
             auto& file = out.files.back();
@@ -297,12 +298,12 @@ CueSheet parse(const std::string& data)
             if (!lengthok)
                 continue;
             file.tracks.back().postgap = length;
-        } else if (!strncmp(token, "REM", 3)) {
+        } else if (!strncasecmp(token, "REM", 3)) {
             // we should have three tokens, REM <tag> <value>
             if (state.numTokens() == 3) {
                 out.comments.push_back(Comment { state.token(1), state.token(2) });
             }
-        } else if (!strncmp(token, "TITLE", 5)) {
+        } else if (!strncasecmp(token, "TITLE", 5)) {
             // we should have two tokens, TITLE title
             const auto title = state.token(1);
             if (!title)
@@ -317,7 +318,7 @@ CueSheet parse(const std::string& data)
                 continue;
             }
             file.tracks.back().title = title;
-        } else if (!strncmp(token, "PERFORMER", 9)) {
+        } else if (!strncasecmp(token, "PERFORMER", 9)) {
             // we should have two tokens, PERFORMER performer
             const auto performer = state.token(1);
             if (!performer)
@@ -332,7 +333,7 @@ CueSheet parse(const std::string& data)
                 continue;
             }
             file.tracks.back().performer = performer;
-        } else if (!strncmp(token, "SONGWRITER", 10)) {
+        } else if (!strncasecmp(token, "SONGWRITER", 10)) {
             // we should have two tokens, SONGWRITER songwriter
             const auto songwriter = state.token(1);
             if (!songwriter)
@@ -347,7 +348,7 @@ CueSheet parse(const std::string& data)
                 continue;
             }
             file.tracks.back().songwriter = songwriter;
-        } else if (!strncmp(token, "ISRC", 4)) {
+        } else if (!strncasecmp(token, "ISRC", 4)) {
             if (out.files.empty())
                 continue;
             auto& file = out.files.back();
@@ -378,7 +379,7 @@ CueSheet parse(const std::string& data)
             isrc.serial = static_cast<uint32_t>(serial);
 
             file.tracks.back().isrc = isrc;
-        } else if (!strncmp(token, "FLAGS", 5)) {
+        } else if (!strncasecmp(token, "FLAGS", 5)) {
             if (out.files.empty())
                 continue;
             auto& file = out.files.back();
@@ -390,23 +391,23 @@ CueSheet parse(const std::string& data)
                 const auto f = state.token(idx);
                 if (f == nullptr)
                     break;
-                if (!strncmp(f, "DCP", 3))
+                if (!strncasecmp(f, "DCP", 3))
                     flags |= Track::Flag::DCP;
-                else if (!strncmp(f, "4CH", 3))
+                else if (!strncasecmp(f, "4CH", 3))
                     flags |= Track::Flag::CH4;
-                else if (!strncmp(f, "PRE", 3))
+                else if (!strncasecmp(f, "PRE", 3))
                     flags |= Track::Flag::PRE;
-                else if (!strncmp(f, "SCMS", 4))
+                else if (!strncasecmp(f, "SCMS", 4))
                     flags |= Track::Flag::SCMS;
             }
             file.tracks.back().flags = flags;
-        } else if (!strncmp(token, "CATALOG", 7)) {
+        } else if (!strncasecmp(token, "CATALOG", 7)) {
             // we should have two tokens, CATALOG <number>
             const auto [ number, numberok ] = state.number<uint64_t>(1);
             if (numberok) {
                 out.catalog = number;
             }
-        } else if (!strncmp(token, "CDTEXTFILE", 10)) {
+        } else if (!strncasecmp(token, "CDTEXTFILE", 10)) {
             // we should have two tokens, CDTEXTFILE filename
             const auto fn = state.token(1);
             if (fn) {
