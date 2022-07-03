@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 
     const auto sheet = CueParser::parseFile(argv[1]);
     if (sheet.catalog) {
-        printf("catalog %llu\n", static_cast<unsigned long long>(*sheet.catalog));
+        printf("catalog %013llu\n", static_cast<unsigned long long>(*sheet.catalog));
     }
     if (!sheet.cdtextfile.empty()) {
         printf("cdtextfile '%s'\n", sheet.cdtextfile.c_str());
