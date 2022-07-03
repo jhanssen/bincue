@@ -9,8 +9,20 @@ int main(int argc, char** argv)
     }
 
     const auto sheet = CueParser::parseFile(argv[1]);
+    if (!sheet.cdtextfile.empty()) {
+        printf("cdtextfile '%s'\n", sheet.cdtextfile.c_str());
+    }
     if (sheet.catalog) {
         printf("catalog %llu\n", static_cast<unsigned long long>(*sheet.catalog));
+    }
+    if (!sheet.title.empty()) {
+        printf("title '%s'\n", sheet.title.c_str());
+    }
+    if (!sheet.performer.empty()) {
+        printf("performer '%s'\n", sheet.performer.c_str());
+    }
+    if (!sheet.songwriter.empty()) {
+        printf("songwriter '%s'\n", sheet.songwriter.c_str());
     }
     for (const auto& file : sheet.files) {
         printf("file '%s' type 0x%x\n", file.filename.c_str(), static_cast<uint32_t>(file.type));
