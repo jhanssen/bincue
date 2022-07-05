@@ -1,5 +1,6 @@
 #include "CueParser.h"
 #include <array>
+#include <cctype>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -301,7 +302,9 @@ CueSheet parse(const std::string& data)
         } else if (!strncasecmp(token, "REM", 3)) {
             // we should have three tokens, REM <tag> <value>
             if (state.numTokens() == 3) {
-                out.comments.push_back(CueParser::Comment { state.token(1), state.token(2) });
+                std::string tag = state.token(1);
+                std::transform(tag.begin(), tag.end(), tag.begin(), toupper);
+                out.comments.push_back(CueParser::Comment { std::move(tag), state.token(2) });
             }
         } else if (!strncasecmp(token, "TITLE", 5)) {
             // we should have two tokens, TITLE title
