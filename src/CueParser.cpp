@@ -303,7 +303,7 @@ CueSheet parse(const std::string& data)
             // we should have three tokens, REM <tag> <value>
             if (state.numTokens() == 3) {
                 std::string tag = state.token(1);
-                std::transform(tag.begin(), tag.end(), tag.begin(), toupper);
+                std::transform(tag.begin(), tag.end(), tag.begin(), [](auto c) { return toupper(c); });
                 out.comments.push_back(CueParser::Comment { std::move(tag), state.token(2) });
             }
         } else if (!strncasecmp(token, "TITLE", 5)) {
